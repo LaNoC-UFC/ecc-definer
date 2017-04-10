@@ -2,33 +2,33 @@ import java.util.ArrayList;
 
 public class Individual {
     private ArrayList<Integer> genotype;
-    private ArrayList<Integer> weights;
-    private ArrayList<Double> reliabilities;
-    private ArrayList<Double> areas;
+    private ArrayList<Integer> dataFlow;
+    private ArrayList<Double> correctionRate;
+    private ArrayList<Double> correctionCost;
     private double fitness;
 
-    public Individual(ArrayList<Integer> weights, ArrayList<Double> reliabilites, ArrayList<Double> areas) {
+    public Individual(ArrayList<Integer> dataFlow, ArrayList<Double> correctionRate, ArrayList<Double> correctionCost) {
         genotype = new ArrayList<>();
-        this.weights = weights;
-        this.reliabilities = reliabilites;
-        this.areas = areas;
+        this.dataFlow = dataFlow;
+        this.correctionRate = correctionRate;
+        this.correctionCost = correctionCost;
         generateGenes();
         calculateFitness();
     }
 
-    public Individual(ArrayList<Integer> genotype, ArrayList<Integer> weights, ArrayList<Double> reliabilites, ArrayList<Double> areas) {
+    public Individual(ArrayList<Integer> genotype, ArrayList<Integer> dataFlow, ArrayList<Double> correctionRate, ArrayList<Double> correctionCost) {
         this.genotype = genotype;
-        this.weights = weights;
-        this.reliabilities = reliabilites;
-        this.areas = areas;
+        this.dataFlow = dataFlow;
+        this.correctionRate = correctionRate;
+        this.correctionCost = correctionCost;
         calculateFitness();
     }
 
     private void generateGenes() {
         genotype = new ArrayList<>();
 
-        for(Integer index : weights){
-            genotype.add((int)(Math.random() * areas.size()));
+        for(Integer index : dataFlow){
+            genotype.add((int)(Math.random() * correctionCost.size()));
         }
 
     }
@@ -36,29 +36,29 @@ public class Individual {
     private void calculateFitness() {
         fitness = 0.0;
 
-        double area = 0.0;
-        for (Integer a : genotype)
-            area += areas.get(a);
-
-        double reliability = 0.0;
-        int w = 0;
-        for (Integer r : genotype) {
-            reliability += (reliabilities.get(r) / (double) weights.get(w));
-            w++;
+        for(Integer g : genotype){
+            fitness += (Math.pow(dataFlow.get(g), correctionRate.get(g)) / correctionCost.get(g));
         }
-        fitness = (reliability / area);
     }
 
-    public void mutate(){
-        int gene = (int) (Math.random() * genotype.size());
-        int newGene;
+    public void mutate(double probability){
+        boolean changed = false;
 
-        do{
-            newGene = (int) (Math.random() * 4);
-        }while(genotype.get(gene) == newGene);
+        for(Integer g : genotype){
+            if(probability < (Math.random()))
+                continue;
 
-        genotype.set(gene, newGene);
-        calculateFitness();
+            int newGene;
+            do{
+                newGene = (int) (Math.random() * correctionCost.size());
+            }while(genotype.get(g) == newGene);
+
+            genotype.set(g, newGene);
+            changed = true;
+        }
+
+        if(changed)
+            calculateFitness();
     }
 
     public double getFitness() {

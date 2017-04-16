@@ -37,7 +37,7 @@ public class Individual implements Comparable<Individual>{
         fitness = 0.0;
         int i = 0;
         for(Integer g : genotype){
-            fitness += (Math.pow(dataFlow.get(g), correctionRate.get(g)) / correctionCost.get(g));
+            fitness += (Math.pow(dataFlow.get(i), correctionRate.get(g)) / correctionCost.get(g));
             i++;
         }
     }

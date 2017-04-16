@@ -1,8 +1,8 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GeneticAlgorithm {
     private static int populationSize = 50;
-    private static int tournaments = 30;
     private static int generations = 100;
     private static double crossoverProbability = 0.7;
     private static double mutationProbability = 0.1;
@@ -13,12 +13,20 @@ public class GeneticAlgorithm {
     private ArrayList<Double> correctionCost;
     private double bestFitness;
 
-    public GeneticAlgorithm(){
-        population = new ArrayList<>();
-        dataFlow = new ArrayList<>();
-        correctionRate = new ArrayList<>();
-        correctionCost = new ArrayList<>();
-        bestFitness = 0.0;
+    public static void main(String[] args){
+
+        //input args processing
+
+        ArrayList<Integer> dataFlow = null; //read from text file
+        ArrayList<Double> correctionRate = null; //read from text file
+        ArrayList<Double> correctionCost = null; //read from text file
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(dataFlow, correctionRate, correctionCost);
+        ga.initPopulation();
+        ga.selection();
+        
+        System.out.println("Final Best Fitness: " + ga.getPopulation().get(ga.getPopulation().size() - 1).getFitness());
+        System.out.println("Genotype: " + ga.getPopulation().get(ga.getPopulation().size() - 1).getGenotype().toString());
     }
 
     public GeneticAlgorithm(ArrayList<Integer> dataFlow, ArrayList<Double> correctionRate, ArrayList<Double> correctionCost){
@@ -36,9 +44,64 @@ public class GeneticAlgorithm {
         }
     }
 
-    public void rouletteWheel(){
+    public void selection(){
+        ArrayList<Individual> newGeneration;
+        Individual parentOne, parentTwo;
+        double fitnessSum;
 
-        //todo
+        for(int g = 0; g < generations; g++){
+            newGeneration = new ArrayList<>();
+
+            while(population.size() > 0) {
+                //do the roulette wheel selection method for two individuals
+                fitnessSum = rouletteWheelInit();
+                parentOne = rouletteWheelSelection(fitnessSum);
+                parentTwo = rouletteWheelSelection(fitnessSum);
+
+                //do crossover for generate two sons
+                crossover(parentOne, parentTwo, newGeneration);
+
+                //do mutation on each son
+                newGeneration.get(newGeneration.size() - 2).mutate(mutationProbability); //before last individual
+                newGeneration.get(newGeneration.size() - 1).mutate(mutationProbability); //last individual
+
+                //delete the parents from actual generation
+                population.remove(parentOne);
+                population.remove(parentTwo);
+            }
+
+            population = newGeneration;
+        }
+        Collections.sort(population);
+    }
+
+    public double rouletteWheelInit(){
+        double fitnessSum = 0.0;
+        bestFitness = 0.0;
+
+        for(Individual i : population){
+            fitnessSum += i.getFitness();
+            if(i.getFitness() > bestFitness)
+                bestFitness = i.getFitness();
+        }
+
+        Collections.sort(population);
+        System.out.println("Best Fitness: " + bestFitness);
+        return fitnessSum;
+    }
+
+    public Individual rouletteWheelSelection(double fitnessSum){
+        double partialSum = 0.0;
+        double selected = Math.random() * fitnessSum;
+
+        for(Individual i : population){
+            partialSum += i.getFitness();
+
+            if(partialSum >= selected)
+                return i;
+        }
+
+        return null;
     }
 
     public int crossover(Individual one, Individual two, ArrayList<Individual> newGeneration){
@@ -59,5 +122,9 @@ public class GeneticAlgorithm {
         newGeneration.add(new Individual(sonTwo, dataFlow, correctionRate, correctionCost));
 
         return index;
+    }
+
+    public ArrayList<Individual> getPopulation(){
+        return population;
     }
 }

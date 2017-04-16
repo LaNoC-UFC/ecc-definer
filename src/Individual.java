@@ -53,9 +53,9 @@ public class Individual implements Comparable<Individual>{
             int newGene;
             do{
                 newGene = (int) (Math.random() * correctionCost.size());
-            }while(genotype.get(g) == newGene);
+            }while(genotype.get(i) == newGene);
 
-            genotype.set(g, newGene);
+            genotype.set(i, newGene);
             changed = true;
             i++;
         }

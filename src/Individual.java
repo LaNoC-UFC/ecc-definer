@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Individual {
+public class Individual implements Comparable<Individual>{
     private ArrayList<Integer> genotype;
     private ArrayList<Integer> dataFlow;
     private ArrayList<Double> correctionRate;
@@ -45,6 +45,7 @@ public class Individual {
     public void mutate(double probability){
         boolean changed = false;
 
+        int i = 0;
         for(Integer g : genotype){
             if(probability < (Math.random()))
                 continue;
@@ -52,10 +53,11 @@ public class Individual {
             int newGene;
             do{
                 newGene = (int) (Math.random() * correctionCost.size());
-            }while(genotype.get(g) == newGene);
+            }while(genotype.get(i) == newGene);
 
-            genotype.set(g, newGene);
+            genotype.set(i, newGene);
             changed = true;
+            i++;
         }
 
         if(changed)
@@ -76,5 +78,16 @@ public class Individual {
     public boolean equals(Object obj){
 
         return ((obj instanceof Individual) && ((Individual) obj).getGenotype().equals(this.genotype));
+    }
+
+    @Override
+    public int compareTo(Individual other) {
+        if(this.getFitness() > other.getFitness())
+            return 1;
+
+        if(this.getFitness() < other.getFitness())
+            return -1;
+
+        return 0;
     }
 }

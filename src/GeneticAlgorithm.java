@@ -1,5 +1,7 @@
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +33,21 @@ public class GeneticAlgorithm {
         ga.selection();
         
         System.out.println("Final Best Fitness: " + ga.getPopulation().get(ga.getPopulation().size() - 1).getFitness());
-        System.out.println("Genotype: " + ga.getPopulation().get(ga.getPopulation().size() - 1).getGenotype().toString());
+        String bestGenotype = ga.getPopulation().get(ga.getPopulation().size() - 1).getGenotype().toString();
+        System.out.println("Genotype: " + bestGenotype);
+
+        GeneticAlgorithm.writeResult(".\\bestGenotype.txt", bestGenotype);
+    }
+
+    public static void writeResult(String fileName, String best){
+        Path path = Paths.get(fileName);
+
+        try(BufferedWriter bw = Files.newBufferedWriter(path)){
+            bw.write(best);
+        } catch (IOException e) {
+            System.err.println("The file could not be create.");
+            e.printStackTrace();
+        }
     }
 
     public static ArrayList<Integer> readIntegerData(String path){

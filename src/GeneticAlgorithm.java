@@ -1,5 +1,9 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class GeneticAlgorithm {
     private static int populationSize = 50;
@@ -15,11 +19,12 @@ public class GeneticAlgorithm {
 
     public static void main(String[] args){
 
-        //input args processing
+        if(args.length != 3)
+            return;
 
-        ArrayList<Integer> dataFlow = null; //read from text file
-        ArrayList<Double> correctionRate = null; //read from text file
-        ArrayList<Double> correctionCost = null; //read from text file
+        ArrayList<Integer> dataFlow = GeneticAlgorithm.readIntegerData(args[0]);
+        ArrayList<Double> correctionRate = GeneticAlgorithm.readDoubleData(args[1]);
+        ArrayList<Double> correctionCost = GeneticAlgorithm.readDoubleData(args[2]);
 
         GeneticAlgorithm ga = new GeneticAlgorithm(dataFlow, correctionRate, correctionCost);
         ga.initPopulation();
@@ -27,6 +32,42 @@ public class GeneticAlgorithm {
         
         System.out.println("Final Best Fitness: " + ga.getPopulation().get(ga.getPopulation().size() - 1).getFitness());
         System.out.println("Genotype: " + ga.getPopulation().get(ga.getPopulation().size() - 1).getGenotype().toString());
+    }
+
+    public static ArrayList<Integer> readIntegerData(String path){
+        try {
+            String contents = Files.lines(Paths.get(path)).collect(Collectors.joining("\n"));
+            String[] data = contents.split(" ");
+            ArrayList<Integer> integerData = new ArrayList<>();
+
+            for(String s : data)
+                integerData.add(Integer.valueOf(s));
+
+            return integerData;
+        } catch (IOException e) {
+            System.err.println("File could not be open.");
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static ArrayList<Double> readDoubleData(String path){
+        try {
+            String contents = Files.lines(Paths.get(path)).collect(Collectors.joining("\n"));
+            String[] data = contents.split(" ");
+            ArrayList<Double> doubleData = new ArrayList<>();
+
+            for(String s : data)
+                doubleData.add(Double.valueOf(s));
+
+            return doubleData;
+        } catch (IOException e) {
+            System.err.println("File could not be open.");
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public GeneticAlgorithm(ArrayList<Integer> dataFlow, ArrayList<Double> correctionRate, ArrayList<Double> correctionCost){

@@ -55,7 +55,7 @@ public class IndividualTest {
     public void fitnessValidation() {
         Individual individual = new Individual(newGenotype, dataFlow, correctionRate, correctionCost);
 
-        Assert.assertEquals(46.916, individual.getFitness(), 0.001);
+        Assert.assertEquals(364.333, individual.getFitness(), 0.001);
     }
 
     @Test
